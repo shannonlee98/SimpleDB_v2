@@ -38,9 +38,39 @@ public class Parser {
    
    public Term term() {
       Expression lhs = expression();
-      lex.eatDelim('=');
+      String opr = "";
+      if (lex.matchDelim('=')) {
+         lex.eatDelim('=');
+         opr = "=";
+      } else if (lex.matchDelim('>')) {
+         lex.eatDelim('>');
+         if (lex.matchDelim('=')) {
+            lex.eatDelim('=');
+            opr = ">=";
+         } else {
+            opr = ">";
+         }
+      } else if (lex.matchDelim('<')) {
+         lex.eatDelim('<');
+         if (lex.matchDelim('=')) {
+            lex.eatDelim('=');
+            opr = "<=";
+         } else {
+            opr = "<";
+         }
+      } else if (lex.matchDelim('!')) {
+         lex.eatDelim('!');
+         if (lex.matchDelim('=')) {
+            lex.eatDelim('=');
+            opr = "!=";
+         } else {
+            opr = "!";
+         }
+      }
       Expression rhs = expression();
-      return new Term(lhs, rhs);
+      Term term = new Term(lhs, rhs);
+      term.setOpr(opr);
+      return term;
    }
    
    public Predicate predicate() {

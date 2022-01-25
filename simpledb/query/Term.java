@@ -10,6 +10,7 @@ import simpledb.record.*;
  */
 public class Term {
    private Expression lhs, rhs;
+   private String opr = null;
    
    /**
     * Create a new term that compares two expressions
@@ -20,6 +21,14 @@ public class Term {
    public Term(Expression lhs, Expression rhs) {
       this.lhs = lhs;
       this.rhs = rhs;
+   }
+
+   public void setOpr(String opr) {
+      this.opr = opr;
+   }
+
+   public String getOpr() {
+      return this.opr;
    }
    
    /**
@@ -32,7 +41,22 @@ public class Term {
    public boolean isSatisfied(Scan s) {
       Constant lhsval = lhs.evaluate(s);
       Constant rhsval = rhs.evaluate(s);
-      return rhsval.equals(lhsval);
+      switch (this.opr) {
+         case "=":
+            return rhsval.equals(lhsval);
+         case "!=":
+            return !rhsval.equals(lhsval);
+         case ">":
+            return (rhsval.compareTo(lhsval) < 0);
+         case ">=":
+            return (rhsval.compareTo(lhsval) <= 0);
+         case "<":
+            return (rhsval.compareTo(lhsval) > 0);
+         case "<=":
+            return (rhsval.compareTo(lhsval) >= 0);
+         default:
+            return false;
+      }
    }
    
    /**
