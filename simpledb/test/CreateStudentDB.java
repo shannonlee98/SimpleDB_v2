@@ -1,17 +1,23 @@
-package embedded;
-import java.sql.*;
+package simpledb.test;
 
-import simpledb.jdbc.embedded.EmbeddedDriver;
+import simpledb.tx.Transaction;
+// import simpledb.plan.Plan;
+import simpledb.plan.Planner;
+// import simpledb.query.*;
+import simpledb.server.SimpleDB;
 
 public class CreateStudentDB {
    public static void main(String[] args) {
-      Driver d = new EmbeddedDriver();
-      String url = "jdbc:simpledb:studentdb";
+      try {
+         // analogous to the driver
+         SimpleDB db = new SimpleDB("studentdb");
 
-      try (Connection conn = d.connect(url, null);
-            Statement stmt = conn.createStatement()) {
+         // analogous to the connection
+         Transaction tx  = db.newTx();
+         Planner planner = db.planner();
+
          String s = "create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)";
-         stmt.executeUpdate(s);
+         planner.executeUpdate(s, tx);
          System.out.println("Table STUDENT created.");
 
          s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
@@ -25,11 +31,11 @@ public class CreateStudentDB {
                "(8, 'pat', 20, 2019)",
          "(9, 'lee', 10, 2021)"};
          for (int i=0; i<studvals.length; i++)
-            stmt.executeUpdate(s + studvals[i]);
+            planner.executeUpdate(s + studvals[i], tx);
          System.out.println("STUDENT records inserted.");
 
          s = "create table DEPT(DId int, DName varchar(8))";
-         stmt.executeUpdate(s);
+         planner.executeUpdate(s, tx);
          System.out.println("Table DEPT created.");
 
          s = "insert into DEPT(DId, DName) values ";
@@ -37,11 +43,11 @@ public class CreateStudentDB {
                               "(20, 'math')",
                               "(30, 'drama')"};
          for (int i=0; i<deptvals.length; i++)
-            stmt.executeUpdate(s + deptvals[i]);
+            planner.executeUpdate(s + deptvals[i], tx);
          System.out.println("DEPT records inserted.");
 
          s = "create table COURSE(CId int, Title varchar(20), DeptId int)";
-         stmt.executeUpdate(s);
+         planner.executeUpdate(s, tx);
          System.out.println("Table COURSE created.");
 
          s = "insert into COURSE(CId, Title, DeptId) values ";
@@ -52,11 +58,11 @@ public class CreateStudentDB {
                                 "(52, 'acting', 30)",
                                 "(62, 'elocution', 30)"};
          for (int i=0; i<coursevals.length; i++)
-            stmt.executeUpdate(s + coursevals[i]);
+            planner.executeUpdate(s + coursevals[i], tx);
          System.out.println("COURSE records inserted.");
 
          s = "create table SECTION(SectId int, CourseId int, Prof varchar(8), YearOffered int)";
-         stmt.executeUpdate(s);
+         planner.executeUpdate(s, tx);
          System.out.println("Table SECTION created.");
 
          s = "insert into SECTION(SectId, CourseId, Prof, YearOffered) values ";
@@ -66,11 +72,11 @@ public class CreateStudentDB {
                               "(43, 32, 'einstein', 2017)",
                               "(53, 62, 'brando', 2018)"};
          for (int i=0; i<sectvals.length; i++)
-            stmt.executeUpdate(s + sectvals[i]);
+            planner.executeUpdate(s + sectvals[i], tx);
          System.out.println("SECTION records inserted.");
 
          s = "create table ENROLL(EId int, StudentId int, SectionId int, Grade varchar(2))";
-         stmt.executeUpdate(s);
+         planner.executeUpdate(s, tx);
          System.out.println("Table ENROLL created.");
 
          s = "insert into ENROLL(EId, StudentId, SectionId, Grade) values ";
@@ -81,10 +87,12 @@ public class CreateStudentDB {
                                 "(54, 4, 53, 'A' )",
                                 "(64, 6, 53, 'A' )"};
          for (int i=0; i<enrollvals.length; i++)
-            stmt.executeUpdate(s + enrollvals[i]);
+            planner.executeUpdate(s + enrollvals[i], tx);
          System.out.println("ENROLL records inserted.");
+         
+         tx.commit();
       }
-      catch(SQLException e) {
+      catch(Exception e) {
          e.printStackTrace();
       }
    }
