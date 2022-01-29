@@ -2,6 +2,7 @@ package simpledb.index;
 
 import java.util.Map;
 
+import simpledb.index.hash.HashIndex;
 import simpledb.metadata.*;
 import simpledb.plan.*;
 import simpledb.query.*;
@@ -23,6 +24,10 @@ public class IndexRetrievalTest {
       Map<String,IndexInfo> indexes = mdm.getIndexInfo("student", tx);
       IndexInfo ii = indexes.get("majorid");
       Index idx = ii.open();
+      if (idx instanceof HashIndex)
+         System.out.println("MajorId index is Hash");
+      else 
+         System.out.println("MajorId index is BTree");
 
       // Retrieve all index records having a dataval of 20.
       idx.beforeFirst(new Constant(20));

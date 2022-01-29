@@ -5,6 +5,7 @@ import simpledb.query.*;
 import simpledb.metadata.*;
 import simpledb.plan.*;
 import simpledb.index.*;
+import simpledb.index.hash.HashIndex;
 import simpledb.index.planner.IndexSelectPlan;
 
 import java.util.Map;
@@ -39,6 +40,10 @@ public class IndexSelectTest {
 		// Open a scan on the table.
 		TableScan s = (TableScan) p.open();  //must be a table scan
 		Index idx = ii.open();
+		if (idx instanceof HashIndex) 
+			System.out.println("StudentId index is Hash");
+		else 
+			System.out.println("StudentId index is BTree");
 
 		// Retrieve all index records having the specified dataval.
 		idx.beforeFirst(c);

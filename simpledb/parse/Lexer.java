@@ -138,6 +138,21 @@ public class Lexer {
       return s;
    }
    
+   /**
+    * Throws an exception if the current token is not 
+    * a valid index type. 
+    * Otherwise, returns the index type as string 
+    * and moves to the next token.
+    * @return the string value of the current token
+    */
+   public String eatIndexType() {
+      if (!matchKeyword("hash") && !matchKeyword("btree"))
+         throw new BadSyntaxException();
+      String idxtype = tok.sval;
+      nextToken();
+      return idxtype;
+   }
+   
    private void nextToken() {
       try {
          tok.nextToken();
@@ -150,6 +165,7 @@ public class Lexer {
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", 
-                               "create", "table", "int", "varchar", "view", "as", "index", "on");
+                               "create", "table", "int", "varchar", "view", "as", "index", "on",
+                               "using", "hash", "btree");
    }
 }
